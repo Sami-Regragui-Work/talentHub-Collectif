@@ -38,7 +38,7 @@ Chaque rôle possède des **droits spécifiques** et un **dashboard dédié**.
 - Architecture MVC (sans framework)
 - PDO + requêtes préparées
 - MySQL
-- JavaScript 
+- JavaScript
 - HTML / CSS
 - Authentification et rôles from scratch
 
@@ -63,9 +63,9 @@ Chaque rôle possède des **droits spécifiques** et un **dashboard dédié**.
 - CRUD **Tags**
 - Gestion & archivage des offres (soft delete)
 - Tableau de bord avec statistiques :
-  - Offres par catégorie
-  - Tags populaires
-  - Recruteurs actifs
+    - Offres par catégorie
+    - Tags populaires
+    - Recruteurs actifs
 - Restauration des offres archivées (optionnel)
 
 #### Recruteur
@@ -80,20 +80,25 @@ Chaque rôle possède des **droits spécifiques** et un **dashboard dédié**.
 
 - Consultation des offres disponibles
 - Page détail d’une offre
-- Recherche dynamique  :
-  - mots-clés
-  - catégories
-  - tags *(optionnel)*
+- Recherche dynamique :
+    - mots-clés
+    - catégories
+    - tags _(optionnel)_
 - Postulation avec upload sécurisé de CV
 - Jobs recommandés basés sur :
-  - compétences
-  - prétentions salariales
+    - compétences
+    - prétentions salariales
 
 ---
 
 ## 📂 Architecture du projet (détaillée)
 
 ```
+/assets
+ ├── talentHub-class.png
+ ├── talentHub-erd.png
+ └── TalentHub-UC.php
+
 /public
  ├── .htaccess
  └── index.php
@@ -187,10 +192,13 @@ Chaque rôle possède des **droits spécifiques** et un **dashboard dédié**.
 2. Configurer la base de données dans `/config/database.php`
 3. Importer le fichier SQL
 4. Lancer le serveur :
+
 ```bash
 php -S localhost:8000 -t public
 ```
+
 5. Accéder à l’application via :
+
 ```
 http://localhost:8000
 ```
