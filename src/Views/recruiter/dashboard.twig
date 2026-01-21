@@ -1,0 +1,48 @@
+{% extends "layout.twig" %}
+
+{% block title %}Recruiter Dashboard - SAMVC{% endblock %}
+
+{% block content %}
+    <div class="bg-gray-800/90 backdrop-blur-sm rounded-xl p-8 shadow-2xl border-2 border-gray-700/50 max-w-2xl mx-auto w-full space-y-8">
+        <!-- Header -->
+        <div class="text-center">
+            <h1 class="text-4xl font-bold text-white mb-4 bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
+                Recruiter Dashboard
+            </h1>
+            
+            <div class="bg-gray-900/50 border border-gray-700/50 rounded-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-200 mb-2">
+                    Welcome {{ user.fullName }}, the {{ user.role.stringName }}!
+                </h2>
+                <p class="text-gray-400 text-sm">Manage candidates, jobs, and hiring processes</p>
+            </div>
+        </div>
+
+        <!-- Stats Cards (placeholder for future features) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-gray-900/50 border border-gray-700 rounded-lg p-6 text-center hover:bg-gray-800/50 transition-all duration-200">
+                <div class="text-3xl font-bold text-green-400">0</div>
+                <div class="text-gray-300 text-sm mt-1">Open Positions</div>
+            </div>
+            <div class="bg-gray-900/50 border border-gray-700 rounded-lg p-6 text-center hover:bg-gray-800/50 transition-all duration-200">
+                <div class="text-3xl font-bold text-blue-400">0</div>
+                <div class="text-gray-300 text-sm mt-1">Active Candidates</div>
+            </div>
+            <div class="bg-gray-900/50 border border-gray-700 rounded-lg p-6 text-center hover:bg-gray-800/50 transition-all duration-200">
+                <div class="text-3xl font-bold text-orange-400">0</div>
+                <div class="text-gray-300 text-sm mt-1">Pending Reviews</div>
+            </div>
+        </div>
+
+        <!-- Logout -->
+        <form method="GET" action="/logout" class="text-center">
+            <button type="submit" 
+                    class="inline-flex items-center gap-2 bg-red-700 hover:bg-red-800 text-white font-medium py-3 px-8 rounded-lg border border-red-600 transition-all duration-200 shadow-lg hover:shadow-xl focus:ring-4 focus:ring-red-500/50 focus:outline-none">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+                Logout
+            </button>
+        </form>
+    </div>
+{% endblock %}
