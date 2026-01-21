@@ -2,8 +2,6 @@
 
 namespace App\Core;
 
-require_once __DIR__ . "/../../vendor/autoload.php";
-
 use Dotenv\Dotenv;
 use PDO;
 use PDOException;
