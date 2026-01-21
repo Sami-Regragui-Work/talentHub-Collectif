@@ -6,7 +6,7 @@ use App\Interfaces\DashboardInterface;
 use App\Services\AuthService;
 use App\View;
 
-class RecruiterController implements DashboardInterface
+class CandidateController implements DashboardInterface
 {
     private AuthService $authService;
 
@@ -18,6 +18,6 @@ class RecruiterController implements DashboardInterface
     public function dashboard(): void
     {
         $user = $this->authService->getCurrentUser();
-        View::render('recruiter/dashboard.twig', ['user' => $user]);
+        View::render('candidate/dashboard.twig', ['user' => $user]);
     }
 }
