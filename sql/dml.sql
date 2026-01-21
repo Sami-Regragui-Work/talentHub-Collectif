@@ -27,10 +27,10 @@ INSERT INTO tags (name) VALUES
 
 
 INSERT INTO users (name, email, password, role_name) VALUES 
-('Admin User', 'admin@talenthub.com', '$2y$10$hashedpassword1', 'admin'),
-('John Recruiter', 'john@techcorp.com', '$2y$10$hashedpassword2', 'recruiter'),
-('Jane Doe', 'jane.candidate@email.com', '$2y$10$hashedpassword3', 'candidate'),
-('Bob Smith', 'bob.smith@email.com', '$2y$10$hashedpassword4', 'candidate');
+('Admin User', 'admin@talenthub.com', '$2y$12$ocENNKMN1NrnexaRDL3huecXv04oifjQFoY3HUy.K8NiIkGMM5hTm', 'admin'),
+('John Recruiter', 'john@techcorp.com', '$2y$12$ocENNKMN1NrnexaRDL3huecXv04oifjQFoY3HUy.K8NiIkGMM5hTm', 'recruiter'),
+('Jane Doe', 'jane.candidate@email.com', '$2y$12$ocENNKMN1NrnexaRDL3huecXv04oifjQFoY3HUy.K8NiIkGMM5hTm', 'candidate'),
+('Bob Smith', 'bob.smith@email.com', '$2y$12$ocENNKMN1NrnexaRDL3huecXv04oifjQFoY3HUy.K8NiIkGMM5hTm', 'candidate');
 
 
 INSERT INTO recruiters (id, company_name) VALUES 
@@ -59,4 +59,4 @@ INSERT INTO job_offer_tags (tag_name, job_offer_id) VALUES
 
 INSERT INTO applications (cv_id, status, user_id, job_offer_id) VALUES 
 (1, 'pending', 3, 1),  
-(2, 'accepted', 4, 2); 
+(2, 'accepted', 4, 2);
