@@ -1,44 +1,51 @@
-<?php 
- 
- class cv {
+<?php
 
-    private int $id ;
-    private string $path;
-    private string $fileName;
+namespace App\Models;
 
+class Cv
+{
+    private int $id;
+    private ?string $path;
+    private ?string $filename;
 
-    public function __construct($id , $path , $fileName){
-        $this->id = $id;
-        $this->path = $path;
-        $this->fileName = $fileName;
-
+    public function __construct(array $data)
+    {
+        $this->id = (int) $data['id'];
+        $this->path = $data['path'] ?? null;
+        $this->filename = $data['filename'] ?? null;
     }
 
-    // getters
-
-    public function getId(): int {
+    public function getId(): int
+    {
         return $this->id;
     }
 
-    public function getPath(): string {
+    public function getPath(): ?string
+    {
         return $this->path;
     }
 
-    public function getFileName(): string {
-        return $this->fileName;
+    public function getFilename(): ?string
+    {
+        return $this->filename;
     }
 
-    // setters
-
-    public function setPath($path): void {
+    public function setPath(?string $path): void
+    {
         $this->path = $path;
     }
 
-    public function setFileName($fileName): void {
-         $this->fileName = $fileName;
+    public function setFilename(?string $filename): void
+    {
+        $this->filename = $filename;
     }
 
 
-
-
- }
+    public function getAbsolutePath(): string
+    {
+        if ($this->path === null) {
+            return '';
+        }
+        return __DIR__ . '/../../public' . $this->path;
+    }
+}
