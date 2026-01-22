@@ -5,6 +5,7 @@ namespace App\Services;
 use App\enumTypes\RoleName;
 use App\Models\User;
 use App\Repositories\UserRepository;
+use PDO;
 
 class AuthService
 {
@@ -17,12 +18,13 @@ class AuthService
         if (session_status() === PHP_SESSION_NONE) session_start();
     }
 
-    public function register(string $fullname, string $email, string $password, string $role): bool
+    public function register(array $data): bool
     {
-        if ($this->user_repo->emailExists($email)) return false;
+        // string $fullname, string $email, string $password, string $role
+        if ($this->user_repo->emailExists($data["email"])) return false;
 
-        $role_name = RoleName::from($role);
-        $this->user_repo->create($fullname, $email, $password, $role_name);
+        $data["role_name"] = RoleName::from($data["role_name"]);
+        $this->user_repo->create($data,[PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR]);
 
         return true;
     }
