@@ -1,94 +1,123 @@
 <?php
 
-class jobOffer {
+namespace App\Models;
 
-   private int  $id;
-   private string  $title; 
-   private string $description;
-   private float $salary;
-   private bool $isArchived;
-   private string $createdAt;
-   private string $categoryName;
-   private int $recruiterId;
+use DateTimeImmutable;
 
+class JobOffer
+{
+    private int $id;
+    private string $title;
+    private string $description;
+    private ?float $salary;
+    private bool $isArchived;
+    private readonly DateTimeImmutable $createdAt;
+    private Category $category;
+    private Recruiter $recruiter;
+    private array $tags = []; 
 
-   public function __construct($id,$title,$description, $salary,$isArchived,$createdAt,$categoryName,$recruiterId){
-
-                $this->id = $id;
-                $this->title = $title;
-                $this->description = $description;
-                $this->salary = $salary;
-                $this->isArchived = $isArchived;
-                $this->createdAt = $createdAt;
-                $this->categoryName = $categoryName;
-                $this->recruiterId = $recruiterId;
-
-   }
-
-   // Getters
-
-   public function getId(): int {
-       return  $this->id ;
-   }
-
-    public function getTitle(): string {
-       return  $this->title ;
+    public function __construct(array $data, Category $category, Recruiter $recruiter, array $tags = [])
+    {
+        $this->id = (int) $data['id'];
+        $this->title = (string) $data['title'];
+        $this->description = (string) $data['description'];
+        $this->salary = isset($data['salary']) ? (float) $data['salary'] : null;
+        $this->isArchived = (bool) ($data['is_archived'] ?? false);
+        $this->createdAt = new DateTimeImmutable($data['created_at']);
+        $this->category = $category;
+        $this->recruiter = $recruiter;
+        $this->tags = $tags;
     }
 
-    public function getDescription(): string {
-       return  $this->description ;
+    public function getId(): int
+    {
+        return $this->id;
     }
 
-    public function getSalary(): float {
-       return  $this->salary;
+    public function getTitle(): string
+    {
+        return $this->title;
     }
 
-    public function getIsArchived (): bool {
-       return  $this->isArchived  ;
+    public function getDescription(): string
+    {
+        return $this->description;
     }
 
-    public function getCreatedAt (): string {
-       return  $this->createdAt  ;
+    public function getSalary(): ?float
+    {
+        return $this->salary;
     }
 
-    public function getCategoryName (): string {
-       return  $this->categoryName  ;
+    public function getIsArchived(): bool
+    {
+        return $this->isArchived;
+    }
+
+    public function getCreatedAt(): DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function getCategory(): Category
+    {
+        return $this->category;
+    }
+
+    public function getRecruiter(): Recruiter
+    {
+        return $this->recruiter;
+    }
+
+    public function getTags(): array
+    {
+        return $this->tags;
     }
     
-    public function getRecruiterId (): int {
-       return  $this->recruiterId  ;
+
+    public function setTitle(string $title): void
+    {
+        $this->title = $title;
     }
 
-    // setters
-
-    public function setTitle($title): void {
-         $this->title = $title ;
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
     }
 
-    public function setDescription($description): void {
-         $this->description = $description;
+    public function setSalary(?float $salary): void
+    {
+        $this->salary = $salary;
     }
 
-    public function setSalary($salary): void {
-         $this->salary = $salary;
+    public function setCategory(Category $category): void
+    {
+        $this->category = $category;
     }
 
-    public function setIsArchived ($isArchived): void {
-         $this->isArchived = $isArchived ;
+    public function setRecruiter(Recruiter $recruiter): void
+    {
+        $this->recruiter = $recruiter;
     }
 
-    public function setCreatedAt ($createdAt): void{
-         $this->createdAt = $createdAt  ;
+    public function setTags(array $tags): void
+    {
+        $this->tags = $tags;
     }
 
-    public function setCategoryName ($categoryName): void {
-         $this->categoryName = $categoryName ;
+    public function addTag(Tag $tag): void
+    {
+        $this->tags[] = $tag;
     }
 
-    public function setRecruiterId ($recruiterId): void {
-         $this->recruiterId = $recruiterId ;
+   
+    public function archive(): void
+    {
+        $this->isArchived = true;
     }
-  
-    
 
+    public function isActive(): bool
+    {
+        return !$this->isArchived;
+    }
 }
