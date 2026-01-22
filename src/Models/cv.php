@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class Cv
+class CV
 {
     private int $id;
     private ?string $path;

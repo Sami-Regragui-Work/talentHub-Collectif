@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\enumTypes\RoleName;
+
 class Recruiter
 {
     private User $user;
@@ -31,6 +33,6 @@ class Recruiter
     
     public function canPublishJobOffers(): bool
     {
-        return $this->user->isRecruiter();
+        return $this->user->getRole()->getStringName() == RoleName::RECRUITER;
     }
 }

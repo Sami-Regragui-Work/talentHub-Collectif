@@ -73,7 +73,7 @@ class JobOffer
     {
         return $this->tags;
     }
-    
+
 
     public function setTitle(string $title): void
     {
