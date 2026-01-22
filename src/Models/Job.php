@@ -4,7 +4,7 @@ namespace App\Models;
 
 use DateTimeImmutable;
 
-class JobOffer
+class Job
 {
     private int $id;
     private string $title;
@@ -14,7 +14,7 @@ class JobOffer
     private readonly DateTimeImmutable $createdAt;
     private Category $category;
     private Recruiter $recruiter;
-    private array $tags = []; 
+    private array $tags = [];
 
     public function __construct(array $data, Category $category, Recruiter $recruiter, array $tags = [])
     {
@@ -110,7 +110,7 @@ class JobOffer
         $this->tags[] = $tag;
     }
 
-   
+
     public function archive(): void
     {
         $this->isArchived = true;

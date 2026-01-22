@@ -1,21 +1,23 @@
 <?php
 
+namespace App\Models;
 
-class recruiter
+use App\enumTypes\RoleName;
+
+class Recruiter
 {
-    private int $id;
+    private User $user;
     private string $companyName;
 
-    public function __construct($id, $companyName)
+    public function __construct(User $user, array $data)
     {
-        $this->id = $id;
-        $this->companyName = $companyName;
+        $this->user = $user;
+        $this->companyName = (string) $data['company_name'];
     }
 
-    //getters 
-    public function getId(): int
+    public function getUser(): User
     {
-        return $this->id;
+        return $this->user;
     }
 
     public function getCompanyName(): string
@@ -23,15 +25,14 @@ class recruiter
         return $this->companyName;
     }
 
-    // setters 
-
-    public function setId($id): void
-    {
-        $this->id = $id;
-    }
-
-    public function setCompanyName($companyName): void
+    public function setCompanyName(string $companyName): void
     {
         $this->companyName = $companyName;
+    }
+
+    
+    public function canPublishJobOffers(): bool
+    {
+        return $this->user->getRole()->getStringName() == RoleName::RECRUITER;
     }
 }

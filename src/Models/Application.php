@@ -10,16 +10,16 @@ class Application
     private ?CV $cv;
     private string $status;
     private User $candidate;
-    private JobOffer $jobOffer;
+    private Job $job;
     private readonly DateTimeImmutable $appliedAt;
 
-    public function __construct(array $data, User $candidate, JobOffer $jobOffer, ?CV $cv = null)
+    public function __construct(array $data, User $candidate, Job $job, ?CV $cv = null)
     {
         $this->id = (int) $data['id'];
         $this->cv = $cv;
         $this->status = (string) $data['status'];
         $this->candidate = $candidate;
-        $this->jobOffer = $jobOffer;
+        $this->job = $job;
         $this->appliedAt = new DateTimeImmutable($data['applied_at']);
     }
 
@@ -43,9 +43,9 @@ class Application
         return $this->candidate;
     }
 
-    public function getJobOffer(): JobOffer
+    public function getJobOffer(): Job
     {
-        return $this->jobOffer;
+        return $this->job;
     }
 
     public function getAppliedAt(): DateTimeImmutable
