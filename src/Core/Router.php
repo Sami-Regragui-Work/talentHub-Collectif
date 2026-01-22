@@ -4,27 +4,28 @@ namespace App\Core;
 
 use App\Services\AuthService;
 use App\View;
+use MiddlewareInterface;
 
 class Router
 {
     private array $routes = [];
-    private AuthService $auth_service;
 
     public function __construct()
     {
         $this->auth_service = new AuthService();
     }
 
-    public function addRoute(string $method, string $path, string $controller, string $action, string $user_role = ""): void
+    public function addRoute(string $method, string $path, string $controller, string $action, array $middlewares = []): void
     {
         $this->routes[] = [
             "method" => strtoupper($method),
             "path" => $path,
             "controller" => $controller,
             "action" => $action,
-            "user_role" => $user_role,
+            "middleware" => $middlewares
         ];
     }
+    
 
     public function dispatch(): void
     {
@@ -35,15 +36,9 @@ class Router
 
         foreach ($this->routes as $route) {
             if ($route["method"] == $method && $route["path"] == $uri) {
-                if (!empty($route["user_role"])) {
-                    if (!$this->auth_service->isLoggedIn()) {
-                        header("Location: /login");
-                        exit;
-                    }
-
-                    if ($this->auth_service->getCurrentRole() !== $route["user_role"]) {
-                        $this->render403();
-                        exit;
+                foreach($route['middlewares'] as $middleware){
+                    if($middleware instanceof MiddlewareInterface){
+                        $middleware->handle();
                     }
                 }
                 $controller = new $route["controller"]();
@@ -55,11 +50,6 @@ class Router
         $this->render404();
     }
 
-    private function render403(): void
-    {
-        http_response_code(403);
-        View::render('errors/403.twig');
-    }
 
     private function render404(): void
     {
