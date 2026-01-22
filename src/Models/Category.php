@@ -1,12 +1,14 @@
 <?php
 
+namespace App\Models;
+
 class Category
 {
-    private string $name;
+    private readonly string $name; 
 
-    public function __construct(string $name)
+    public function __construct(array $data)
     {
-        $this->name = $name;
+        $this->name = (string) $data['name'];
     }
 
     public function getName(): string
@@ -14,8 +16,5 @@ class Category
         return $this->name;
     }
 
-    public function setName(string $name): void
-    {
-        $this->name = $name;
-    }
+    
 }
