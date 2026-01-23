@@ -10,9 +10,9 @@ class CategoryRepository extends BaseRepository
     protected function getTableName(): string
     {
         return 'categories';
-    } 
+    }
 
-    protected function toObject(array $data): Category
+    public function toObject(array $data): Category
     {
         return new Category($data);
     }

@@ -13,11 +13,11 @@ abstract class BaseRepository
     public function __construct()
     {
         $this->pdo = Database::getPdo();
-    } 
+    }
 
     abstract protected function getTableName(): string;
 
-    abstract protected function toObject(array $data): object;
+    abstract public function toObject(array $data): object;
 
     protected function findBy(array $conditions = [], array $types = []): array
     {

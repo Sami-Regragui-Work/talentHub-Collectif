@@ -26,7 +26,7 @@ class ApplicationRepository extends BaseRepository
         return 'applications';
     }
 
-    protected function toObject(array $data): Application
+    public function toObject(array $data): Application
     {
         $candidate = $this->user_repo->findById($data['user_id']);
         if (!$candidate) {

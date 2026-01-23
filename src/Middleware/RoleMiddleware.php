@@ -2,9 +2,10 @@
 
 namespace App\Middleware;
 
+use App\Interfaces\MiddlewareInterface;
 use App\Services\AuthService;
 use App\View;
-use MiddlewareInterface;
+
 class RoleMiddleware implements MiddlewareInterface{
     private AuthService $auth;
     private string $role;

@@ -12,10 +12,10 @@ class TagRepository extends BaseRepository
         return 'tags';
     }
 
-    protected function toObject(array $data): Tag
+    public function toObject(array $data): Tag
     {
         return new Tag($data);
-    } 
+    }
 
     public function findByName(string $name): ?Tag
     {

@@ -16,14 +16,14 @@ class RecruiterRepository extends BaseRepository
     {
         parent::__construct();
         $this->role_repo = new RoleRepository();
-    } 
+    }
 
     protected function getTableName(): string
     {
         return 'recruiters';
     }
 
-    protected function toObject(array $data): Recruiter
+    public function toObject(array $data): Recruiter
     {
         try {
             $sql = <<<SQL
@@ -51,7 +51,7 @@ class RecruiterRepository extends BaseRepository
 
             $recruiterData = [
                 'id' => $fullData['id'],
-                'fullname' => $fullData['name'],
+                'name' => $fullData['name'],
                 'email' => $fullData['email'],
                 'password' => $fullData['password'],
                 'created_at' => $fullData['created_at'],

@@ -18,7 +18,7 @@ class User
     public function __construct(array $data, Role $role)
     {
         $this->id = (int) $data["id"];
-        $this->full_name = (string) $data["fullname"];
+        $this->full_name = (string) $data["name"];
         $this->email = (string) $data["email"];
         $this->setPassword((string) $data["password"]);
         $this->created_at = new DateTimeImmutable($data["created_at"]);

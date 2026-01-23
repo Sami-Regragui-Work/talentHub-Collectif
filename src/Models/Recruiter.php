@@ -8,9 +8,9 @@ class Recruiter extends User
 {
     private string $companyName;
 
-    public function __construct(array $data)
+    public function __construct(array $data, Role $role)
     {
-        parent::__construct($data);
+        parent::__construct($data, $role);
         $this->companyName = (string) $data['company_name'];
     }
 
