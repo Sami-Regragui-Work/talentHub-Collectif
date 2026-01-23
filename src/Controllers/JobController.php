@@ -24,7 +24,7 @@ class JobController
         $this->authService = new AuthService();
     }
 
-    
+
     public function index(): void
     {
         $user = $this->authService->getCurrentUser();
@@ -40,7 +40,7 @@ class JobController
         ]);
     }
 
-    
+
     public function show(int $id): void
     {
         $user = $this->authService->getCurrentUser();
@@ -58,7 +58,7 @@ class JobController
         ]);
     }
 
-    
+
     public function recruiterJobs(): void
     {
         $user = $this->authService->getCurrentUser();
@@ -76,7 +76,7 @@ class JobController
         ]);
     }
 
-    
+
     public function create(): void
     {
         $user = $this->authService->getCurrentUser();
@@ -94,7 +94,7 @@ class JobController
         ]);
     }
 
-    
+
     public function store(): void
     {
         $errors = [];
@@ -230,13 +230,13 @@ class JobController
         $user = $this->authService->getCurrentUser();
         $job = $this->jobRepository->findById($id);
 
-        if (!$job || $job->getRecruiter()->getId() !== $user->getId()) {
+        if (!$job || $job->getRecruiter()->getId() !== $user['id']) {
             $_SESSION['errors'] = ["Job not found or unauthorized"];
             header('Location: /recruiter/jobs');
             exit;
         }
 
-        $success = $this->jobRepository->archive($id);
+        $success = $this->jobRepository->archive($id); // Changed from softDelete
 
         if ($success) {
             $_SESSION['success'] = "Job archived successfully!";
@@ -248,10 +248,10 @@ class JobController
         exit;
     }
 
-    
+
     public function adminArchive(int $id): void
     {
-        $success = $this->jobRepository->softDelete($id);
+        $success = $this->jobRepository->archive($id);
 
         if ($success) {
             $_SESSION['success'] = "Job archived successfully!";
@@ -263,7 +263,7 @@ class JobController
         exit;
     }
 
-    
+
     public function restore(int $id): void
     {
         $success = $this->jobRepository->restore($id);
@@ -278,12 +278,12 @@ class JobController
         exit;
     }
 
-    
+
     // public function recommended(): void
     // {
     //     $user = $this->authService->getCurrentUser();
-        
-        
+
+
     //     $userSkills = $this->jobRepository->getUserSkills($user['id']);
     //     $salaryExpectation = $user['salary_expectation'] ?? null;
 

@@ -159,14 +159,4 @@ abstract class BaseRepository
             return false;
         }
     }
-
-    public function archive(int $id): ?object
-    {
-        return $this->update($id, ['is_archived' => true], [PDO::PARAM_BOOL]);
-    }
-
-    public function restore(int $id): ?object
-    {
-        return $this->update($id, ['is_archived' => false], [PDO::PARAM_BOOL]);
-    }
 }
