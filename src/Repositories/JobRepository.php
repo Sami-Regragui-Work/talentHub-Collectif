@@ -26,7 +26,7 @@ class JobRepository extends BaseRepository
         return 'job_offers';
     }
 
-    protected function toObject(array $data): Job
+    public function toObject(array $data): Job
     {
         $category = $this->category_repo->findByName($data['category_name']);
         if (!$category) {

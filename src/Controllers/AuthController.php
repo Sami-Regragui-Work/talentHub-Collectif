@@ -58,7 +58,7 @@ class AuthController
         }
 
         $success = $this->auth_service->register(
-            $_POST['fullname'],
+            $_POST['name'],
             $_POST['email'],
             $_POST['password'],
             $_POST['role']

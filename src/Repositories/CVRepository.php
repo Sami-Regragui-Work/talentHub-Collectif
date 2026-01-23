@@ -9,9 +9,9 @@ class CVRepository extends BaseRepository
     protected function getTableName(): string
     {
         return 'cvs';
-    } 
+    }
 
-    protected function toObject(array $data): CV
+    public function toObject(array $data): CV
     {
         return new CV($data);
     }

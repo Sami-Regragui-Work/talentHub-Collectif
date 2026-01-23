@@ -2,9 +2,10 @@
 
 namespace App\Middleware;
 
+use App\Interfaces\MiddlewareInterface;
 use App\Services\AuthService;
 use App\View;
-use MiddlewareInterface;
+
 
 class GuestMiddleware implements MiddlewareInterface{
 
@@ -16,7 +17,7 @@ class GuestMiddleware implements MiddlewareInterface{
     public function handle(): void{
         if($this->auth->isLoggedIn()){
             $role = $this->auth->getCurrentRole();
-            View::render("/{$role}/dashboard.twig");
+            header("Location: /{$role}/dashboard");
             exit;
         }
     }

@@ -16,14 +16,14 @@ class UserRepository extends BaseRepository
     {
         parent::__construct();
         $this->role_repo = new RoleRepository();
-    } 
+    }
 
     protected function getTableName(): string
     {
         return 'users';
     }
 
-    protected function toObject(array $data): User
+    public function toObject(array $data): User
     {
         $roleName = RoleName::from($data['role_name']);
         $role = $this->role_repo->findByName($roleName);

@@ -2,9 +2,10 @@
 
 namespace App\Core;
 
+use App\Interfaces\MiddlewareInterface;
 use App\Services\AuthService;
 use App\View;
-use MiddlewareInterface;
+
 
 class Router
 {
