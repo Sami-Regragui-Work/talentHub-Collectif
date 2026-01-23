@@ -17,10 +17,13 @@ class AuthMiddleware implements MiddlewareInterface{
     }
     public function handle():void{
         if(!$this->auth->isLoggedIn()){
-            View::render('/auth/login.twig');
+            header('Location: /login');
             exit;
         }
     }
 
-
 }
+
+
+
+
