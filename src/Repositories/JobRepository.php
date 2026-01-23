@@ -148,21 +148,11 @@ class JobRepository extends BaseRepository
 
     public function syncTags(int $jobId, array $tagNames): bool
     {
-        try {
-            $this->pdo->beginTransaction();
-
-            $this->detachAllTags($jobId);
-            if (!empty($tagNames)) {
-                $this->attachTags($jobId, $tagNames);
-            }
-
-            $this->pdo->commit();
-            return true;
-        } catch (PDOException $e) {
-            $this->pdo->rollBack();
-            error_log($this::class . ' syncTags error: ' . $e->getMessage());
-            return false;
+        $this->detachAllTags($jobId);
+        if (!empty($tagNames)) {
+            return $this->attachTags($jobId, $tagNames);
         }
+        return true;
     }
 
     public function search(
@@ -242,5 +232,15 @@ class JobRepository extends BaseRepository
             error_log($this::class . ' search error: ' . $e->getMessage());
             return [];
         }
+    }
+
+    public function archive(int $id): ?object
+    {
+        return $this->update($id, ['is_archived' => true], [PDO::PARAM_BOOL]);
+    }
+
+    public function restore(int $id): ?object
+    {
+        return $this->update($id, ['is_archived' => false], [PDO::PARAM_BOOL]);
     }
 }

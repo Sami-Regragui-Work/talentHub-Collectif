@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}SAMVC{% endblock %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-[#030712] min-h-screen antialiased">
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
-        {% if app.flasher is defined and app.flasher.messages is defined %}
-            {% for message in app.flasher.messages %}
-                <div class="mb-6 p-4 border-2 border-gray-700 border-dashed rounded-lg bg-gray-900/50 text-gray-300">
-                    {{ message.content }}
-                </div>
-            {% endfor %}
-        {% endif %}
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>
+			{% block title %}SAMVC
+			{% endblock %}
+		</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+	</head>
+	<body class="bg-[#030712] min-h-screen antialiased">
+		<div class="container mx-auto px-4 py-8 max-w-4xl">
+			{% if app.flasher is defined and app.flasher.messages is defined %}
+				{% for message in app.flasher.messages %}
+					<div class="mb-6 p-4 border-2 border-gray-700 border-dashed rounded-lg bg-gray-900/50 text-gray-300">
+						{{ message.content }}
+					</div>
+				{% endfor %}
+			{% endif %}
 
-        {% block content %}{% endblock %}
-    </div>
-</body>
+			{% block content %}{% endblock %}
+		</div>
+	</body>
 </html>

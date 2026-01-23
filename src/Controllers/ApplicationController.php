@@ -24,21 +24,15 @@ class ApplicationController
     public function create(int $jobId): void
     {
         $user = $this->authService->getCurrentUser();
-        $job = $this->jobRepository->findByIdWithDetails($jobId);
+        $job = $this->jobRepository->findById($jobId);
 
-        if (!$job || $job['deleted_at'] !== null) {
+        if (!$job || $job->getIsArchived()) {
             $_SESSION['errors'] = ["Job not found"];
             header('Location: /jobs');
             exit;
         }
 
-
-        $existingApplication = $this->applicationRepository->findByUserAndJob(
-            $user['id'],
-            $jobId
-        );
-
-        if ($existingApplication) {
+        if ($this->applicationRepository->hasUserApplied($user->getId(), $jobId)) {
             $_SESSION['errors'] = ["You have already applied to this job"];
             header("Location: /jobs/$jobId");
             exit;
@@ -170,14 +164,13 @@ class ApplicationController
         $user = $this->authService->getCurrentUser();
         $job = $this->jobRepository->findById($jobId);
 
-
-        if (!$job || $job['recruiter_id'] !== $user['id']) {
+        if (!$job || $job->getRecruiter()->getId() !== $user->getId()) {
             $_SESSION['errors'] = ["Job not found or unauthorized"];
             header('Location: /recruiter/jobs');
             exit;
         }
 
-        $applications = $this->applicationRepository->findByJobId($jobId);
+        $applications = $this->applicationRepository->findByJobOfferId($jobId);
 
         $success = $_SESSION['success'] ?? null;
         $errors = $_SESSION['errors'] ?? [];
@@ -196,7 +189,7 @@ class ApplicationController
     public function show(int $id): void
     {
         $user = $this->authService->getCurrentUser();
-        $application = $this->applicationRepository->findByIdWithDetails($id);
+        $application = $this->applicationRepository->findById($id);
 
         if (!$application) {
             $_SESSION['errors'] = ["Application not found"];
@@ -204,9 +197,7 @@ class ApplicationController
             exit;
         }
 
-
-        $job = $this->jobRepository->findById($application['job_id']);
-        if ($job['recruiter_id'] !== $user['id']) {
+        if ($application->getJob()->getRecruiter()->getId() !== $user->getId()) {
             $_SESSION['errors'] = ["Unauthorized access"];
             header('Location: /recruiter/jobs');
             exit;
@@ -230,9 +221,7 @@ class ApplicationController
             exit;
         }
 
-
-        $job = $this->jobRepository->findById($application['job_id']);
-        if ($job['recruiter_id'] !== $user['id']) {
+        if ($application->getJob()->getRecruiter()->getId() !== $user->getId()) {
             $_SESSION['errors'] = ["Unauthorized"];
             header('Location: /recruiter/jobs');
             exit;
@@ -246,7 +235,7 @@ class ApplicationController
             $_SESSION['errors'] = ["Failed to accept application"];
         }
 
-        header("Location: /recruiter/jobs/{$application['job_id']}/applications");
+        header("Location: /recruiter/jobs/{$application->getJob()->getId()}/applications");
         exit;
     }
 
@@ -262,9 +251,7 @@ class ApplicationController
             exit;
         }
 
-
-        $job = $this->jobRepository->findById($application['job_id']);
-        if ($job['recruiter_id'] !== $user['id']) {
+        if ($application->getJob()->getRecruiter()->getId() !== $user->getId()) {
             $_SESSION['errors'] = ["Unauthorized"];
             header('Location: /recruiter/jobs');
             exit;
@@ -278,7 +265,7 @@ class ApplicationController
             $_SESSION['errors'] = ["Failed to reject application"];
         }
 
-        header("Location: /recruiter/jobs/{$application['job_id']}/applications");
+        header("Location: /recruiter/jobs/{$application->getJob()->getId()}/applications");
         exit;
     }
 
@@ -294,22 +281,26 @@ class ApplicationController
             exit;
         }
 
-
-        $job = $this->jobRepository->findById($application['job_id']);
-        if ($job['recruiter_id'] !== $user['id']) {
+        if ($application->getJob()->getRecruiter()->getId() !== $user->getId()) {
             $_SESSION['errors'] = ["Unauthorized"];
             header('Location: /recruiter/jobs');
             exit;
         }
 
-        $cvPath = __DIR__ . '/../../' . $application['cv_path'];
-
-        if (!file_exists($cvPath)) {
-            $_SESSION['errors'] = ["CV file not found"];
-            header("Location: /recruiter/jobs/{$application['job_id']}/applications");
+        $cv = $application->getCv();
+        if (!$cv) {
+            $_SESSION['errors'] = ["CV not found"];
+            header("Location: /recruiter/jobs/{$application->getJob()->getId()}/applications");
             exit;
         }
 
+        $cvPath = __DIR__ . '/../../' . $cv->getPath();
+
+        if (!file_exists($cvPath)) {
+            $_SESSION['errors'] = ["CV file not found"];
+            header("Location: /recruiter/jobs/{$application->getJob()->getId()}/applications");
+            exit;
+        }
 
         header('Content-Type: application/octet-stream');
         header('Content-Disposition: attachment; filename="' . basename($cvPath) . '"');
