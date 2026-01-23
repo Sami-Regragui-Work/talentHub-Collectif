@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Application;
+use Exception;
 use PDO;
 use PDOException;
 
@@ -29,12 +30,12 @@ class ApplicationRepository extends BaseRepository
     {
         $candidate = $this->user_repo->findById($data['user_id']);
         if (!$candidate) {
-            throw new \Exception('Candidate not found for application');
+            throw new Exception('Candidate not found for application');
         }
 
         $job = $this->job_repo->findById($data['job_offer_id']);
         if (!$job) {
-            throw new \Exception('Job not found for application');
+            throw new Exception('Job not found for application');
         }
 
         $cv = null;

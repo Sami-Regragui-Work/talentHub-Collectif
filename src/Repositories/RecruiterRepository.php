@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\enumTypes\RoleName;
 use App\Models\Recruiter;
+use Exception;
 use PDO;
 use PDOException;
 
@@ -38,14 +39,14 @@ class RecruiterRepository extends BaseRepository
             $fullData = $stmt->fetch();
 
             if (!$fullData) {
-                throw new \Exception('User data not found for recruiter');
+                throw new Exception('User data not found for recruiter');
             }
 
             $roleName = RoleName::from($fullData['role_name']);
             $role = $this->role_repo->findByName($roleName);
 
             if (!$role) {
-                throw new \Exception('Role not found for recruiter');
+                throw new Exception('Role not found for recruiter');
             }
 
             $recruiterData = [
