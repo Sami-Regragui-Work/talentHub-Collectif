@@ -15,7 +15,7 @@ class RecruiterRepository extends BaseRepository
     {
         parent::__construct();
         $this->role_repo = new RoleRepository();
-    }
+    } 
 
     protected function getTableName(): string
     {
