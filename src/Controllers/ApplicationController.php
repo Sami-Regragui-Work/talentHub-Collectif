@@ -20,7 +20,7 @@ class ApplicationController
         $this->authService = new AuthService();
     }
 
-    
+
     public function create(int $jobId): void
     {
         $user = $this->authService->getCurrentUser();
@@ -32,7 +32,7 @@ class ApplicationController
             exit;
         }
 
-        
+
         $existingApplication = $this->applicationRepository->findByUserAndJob(
             $user['id'],
             $jobId
@@ -54,18 +54,18 @@ class ApplicationController
         ]);
     }
 
-    
+
     public function store(int $jobId): void
     {
         $errors = [];
         $user = $this->authService->getCurrentUser();
 
-        
+
         if (empty($_POST['cover_letter']) || strlen(trim($_POST['cover_letter'])) < 50) {
             $errors[] = "Cover letter must be at least 50 characters";
         }
 
-        
+
         $cvPath = null;
         if (isset($_FILES['cv']) && $_FILES['cv']['error'] === UPLOAD_ERR_OK) {
             $cvPath = $this->uploadCV($_FILES['cv'], $errors);
@@ -79,7 +79,7 @@ class ApplicationController
             exit;
         }
 
-        
+
         $applicationData = [
             'user_id' => $user['id'],
             'job_id' => $jobId,
@@ -100,34 +100,37 @@ class ApplicationController
         exit;
     }
 
-    
+
     private function uploadCV(array $file, array &$errors): ?string
     {
-        $allowedTypes = ['application/pdf', 'application/msword', 
-                         'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-        $maxSize = 5 * 1024 * 1024; // 5MB
+        $allowedTypes = [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ];
+        $maxSize = 10 * 1024 * 1024; // 10MB
 
-       
+
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mimeType = finfo_file($finfo, $file['tmp_name']);
-        finfo_close($finfo);
+        unset($finfo);
 
         if (!in_array($mimeType, $allowedTypes)) {
             $errors[] = "CV must be a PDF or Word document";
             return null;
         }
 
-        
+
         if ($file['size'] > $maxSize) {
-            $errors[] = "CV file size must not exceed 5MB";
+            $errors[] = "CV file size must not exceed 10MB";
             return null;
         }
 
-        
+
         $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
         $filename = uniqid('cv_', true) . '.' . $extension;
-        
-        
+
+
         $uploadDir = __DIR__ . '/../../storage/cvs/';
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0755, true);
@@ -143,7 +146,7 @@ class ApplicationController
         return null;
     }
 
-    
+
     public function candidateApplications(): void
     {
         $user = $this->authService->getCurrentUser();
@@ -161,13 +164,13 @@ class ApplicationController
         ]);
     }
 
-    
+
     public function jobApplications(int $jobId): void
     {
         $user = $this->authService->getCurrentUser();
         $job = $this->jobRepository->findById($jobId);
 
-        
+
         if (!$job || $job['recruiter_id'] !== $user['id']) {
             $_SESSION['errors'] = ["Job not found or unauthorized"];
             header('Location: /recruiter/jobs');
@@ -189,7 +192,7 @@ class ApplicationController
         ]);
     }
 
-    
+
     public function show(int $id): void
     {
         $user = $this->authService->getCurrentUser();
@@ -201,7 +204,7 @@ class ApplicationController
             exit;
         }
 
-        
+
         $job = $this->jobRepository->findById($application['job_id']);
         if ($job['recruiter_id'] !== $user['id']) {
             $_SESSION['errors'] = ["Unauthorized access"];
@@ -215,7 +218,7 @@ class ApplicationController
         ]);
     }
 
-    
+
     public function accept(int $id): void
     {
         $user = $this->authService->getCurrentUser();
@@ -227,7 +230,7 @@ class ApplicationController
             exit;
         }
 
-        
+
         $job = $this->jobRepository->findById($application['job_id']);
         if ($job['recruiter_id'] !== $user['id']) {
             $_SESSION['errors'] = ["Unauthorized"];
@@ -247,7 +250,7 @@ class ApplicationController
         exit;
     }
 
-    
+
     public function reject(int $id): void
     {
         $user = $this->authService->getCurrentUser();
@@ -259,7 +262,7 @@ class ApplicationController
             exit;
         }
 
-        
+
         $job = $this->jobRepository->findById($application['job_id']);
         if ($job['recruiter_id'] !== $user['id']) {
             $_SESSION['errors'] = ["Unauthorized"];
@@ -279,7 +282,7 @@ class ApplicationController
         exit;
     }
 
-    
+
     public function downloadCV(int $id): void
     {
         $user = $this->authService->getCurrentUser();
@@ -291,7 +294,7 @@ class ApplicationController
             exit;
         }
 
-        
+
         $job = $this->jobRepository->findById($application['job_id']);
         if ($job['recruiter_id'] !== $user['id']) {
             $_SESSION['errors'] = ["Unauthorized"];
@@ -307,7 +310,7 @@ class ApplicationController
             exit;
         }
 
-        
+
         header('Content-Type: application/octet-stream');
         header('Content-Disposition: attachment; filename="' . basename($cvPath) . '"');
         header('Content-Length: ' . filesize($cvPath));
@@ -315,4 +318,3 @@ class ApplicationController
         exit;
     }
 }
-

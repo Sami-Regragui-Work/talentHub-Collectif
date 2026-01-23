@@ -38,7 +38,7 @@ class AuthController
     {
         $errors = [];
 
-        if (empty($_POST['name'])) {
+        if (empty($_POST['fullname'])) {
             $errors[] = "Full name is required";
         }
         if (empty($_POST['email']) || !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
@@ -51,18 +51,28 @@ class AuthController
             $errors[] = "Valid role is required";
         }
 
+        if ($_POST['role'] === 'recruiter' && empty($_POST['company_name'])) {
+            $errors[] = "Company name is required for recruiters";
+        }
+
         if (!empty($errors)) {
             $_SESSION['errors'] = $errors;
             header('Location: /register');
             exit;
         }
 
-        $success = $this->auth_service->register(
-            $_POST['name'],
-            $_POST['email'],
-            $_POST['password'],
-            $_POST['role']
-        );
+        $data = [
+            'name' => $_POST['fullname'],
+            'email' => $_POST['email'],
+            'password' => $_POST['password'],
+            'role_name' => $_POST['role']
+        ];
+
+        if ($_POST['role'] === 'recruiter') {
+            $data['company_name'] = $_POST['company_name'];
+        }
+
+        $success = $this->auth_service->register($data);
 
         if (!$success) {
             $_SESSION['errors'] = ["Email already exists"];
