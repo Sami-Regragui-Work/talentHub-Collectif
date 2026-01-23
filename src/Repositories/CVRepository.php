@@ -9,7 +9,7 @@ class CVRepository extends BaseRepository
     protected function getTableName(): string
     {
         return 'cvs';
-    }
+    } 
 
     protected function toObject(array $data): CV
     {

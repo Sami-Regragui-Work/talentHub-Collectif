@@ -18,7 +18,7 @@ class JobRepository extends BaseRepository
         $this->category_repo = new CategoryRepository();
         $this->recruiter_repo = new RecruiterRepository();
         $this->tag_repo = new TagRepository();
-    }
+    } 
 
     protected function getTableName(): string
     {

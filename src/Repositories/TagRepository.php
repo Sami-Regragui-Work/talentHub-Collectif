@@ -15,7 +15,7 @@ class TagRepository extends BaseRepository
     protected function toObject(array $data): Tag
     {
         return new Tag($data);
-    }
+    } 
 
     public function findByName(string $name): ?Tag
     {

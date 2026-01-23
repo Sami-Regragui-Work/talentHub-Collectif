@@ -18,7 +18,7 @@ class ApplicationRepository extends BaseRepository
         $this->cv_repo = new CVRepository();
         $this->user_repo = new UserRepository();
         $this->job_repo = new JobRepository();
-    }
+    } 
 
     protected function getTableName(): string
     {
