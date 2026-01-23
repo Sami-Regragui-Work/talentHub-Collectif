@@ -1,5 +1,8 @@
 <?php
 
-interface MiddlewareInterface{
-    public function handle():void;
+namespace App\Interfaces;
+
+interface MiddlewareInterface
+{
+    public function handle(): void;
 }
