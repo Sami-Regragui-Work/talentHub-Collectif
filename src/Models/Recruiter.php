@@ -4,20 +4,14 @@ namespace App\Models;
 
 use App\enumTypes\RoleName;
 
-class Recruiter
+class Recruiter extends User
 {
-    private User $user;
     private string $companyName;
 
-    public function __construct(User $user, array $data)
+    public function __construct(array $data)
     {
-        $this->user = $user;
+        parent::__construct($data);
         $this->companyName = (string) $data['company_name'];
-    }
-
-    public function getUser(): User
-    {
-        return $this->user;
     }
 
     public function getCompanyName(): string
@@ -31,8 +25,8 @@ class Recruiter
     }
 
     
-    public function canPublishJobOffers(): bool
+    public function canPublishJobs(): bool
     {
-        return $this->user->getRole()->getStringName() == RoleName::RECRUITER;
+        return $this->getRole()->getStringName() == RoleName::RECRUITER;
     }
 }

@@ -9,18 +9,18 @@ class Application
     private int $id;
     private ?CV $cv;
     private string $status;
+    private readonly DateTimeImmutable $appliedAt;
     private User $candidate;
     private Job $job;
-    private readonly DateTimeImmutable $appliedAt;
 
     public function __construct(array $data, User $candidate, Job $job, ?CV $cv = null)
     {
         $this->id = (int) $data['id'];
-        $this->cv = $cv;
         $this->status = (string) $data['status'];
+        $this->appliedAt = new DateTimeImmutable($data['applied_at']);
         $this->candidate = $candidate;
         $this->job = $job;
-        $this->appliedAt = new DateTimeImmutable($data['applied_at']);
+        $this->cv = $cv;
     }
 
     public function getId(): int
@@ -43,7 +43,7 @@ class Application
         return $this->candidate;
     }
 
-    public function getJobOffer(): Job
+    public function getJob(): Job
     {
         return $this->job;
     }
