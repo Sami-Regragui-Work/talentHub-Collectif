@@ -18,7 +18,7 @@ class JobRepository extends BaseRepository
         $this->category_repo = new CategoryRepository();
         $this->recruiter_repo = new RecruiterRepository();
         $this->tag_repo = new TagRepository();
-    } 
+    }
 
     protected function getTableName(): string
     {
@@ -27,22 +27,23 @@ class JobRepository extends BaseRepository
 
     protected function toObject(array $data): Job
     {
-        $job = new Job($data);
-
+        // Get the category
         $category = $this->category_repo->findByName($data['category_name']);
-        if ($category) {
-            $job->setCategory($category);
+        if (!$category) {
+            throw new \Exception('Category not found for job');
         }
 
+        // Get the recruiter
         $recruiter = $this->recruiter_repo->findById($data['recruiter_id']);
-        if ($recruiter) {
-            $job->setRecruiter($recruiter);
+        if (!$recruiter) {
+            throw new \Exception('Recruiter not found for job');
         }
 
+        // Get tags for this job
         $tags = $this->findTagsForJob($data['id']);
-        $job->setTags($tags);
 
-        return $job;
+        // Create Job object with all required dependencies
+        return new Job($data, $category, $recruiter, $tags);
     }
 
     public function findByRecruiterId(int $recruiterId): array
@@ -80,7 +81,7 @@ class JobRepository extends BaseRepository
             $stmt->execute();
             $results = $stmt->fetchAll();
 
-            return array_map(fn($row) => $this->tag_repo->findByName($row['name']), $results);
+            return array_map(fn($row) => $this->tag_repo->toObject($row), $results);
         } catch (PDOException $e) {
             error_log($this::class . ' findTagsForJob error: ' . $e->getMessage());
             return [];
@@ -154,7 +155,9 @@ class JobRepository extends BaseRepository
             $this->pdo->beginTransaction();
 
             $this->detachAllTags($jobId);
-            $this->attachTags($jobId, $tagNames);
+            if (!empty($tagNames)) {
+                $this->attachTags($jobId, $tagNames);
+            }
 
             $this->pdo->commit();
             return true;
