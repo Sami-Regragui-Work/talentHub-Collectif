@@ -3,21 +3,32 @@
 namespace App\Controllers;
 
 use App\Interfaces\DashboardInterface;
-use App\Services\AuthService;
-use App\View;
+use App\Repositories\JobRepository;
+use App\Repositories\ApplicationRepository;
 
-class RecruiterController implements DashboardInterface
+class RecruiterController extends BaseController implements DashboardInterface
 {
-    private AuthService $authService;
+    private JobRepository $jobRepo;
+    private ApplicationRepository $appRepo;
 
     public function __construct()
     {
-        $this->authService = new AuthService();
+        parent::__construct();
+        $this->jobRepo = new JobRepository();
+        $this->appRepo = new ApplicationRepository();
     }
 
     public function dashboard(): void
     {
-        $user = $this->authService->getCurrentUser();
-        View::render('recruiter/dashboard.twig', ['user' => $user]);
+        $this->requireRole('recruiter');
+        
+        $recruiterId = $this->currentUser->getId();
+        
+        $stats = [
+            'myOffers' => count($this->jobRepo->findByRecruiter($recruiterId)),
+            'myApplications' => count($this->appRepo->findByRecruiter($recruiterId))
+        ];
+        
+        $this->render('recruiter/dashboard.twig', ['stats' => $stats]);
     }
 }

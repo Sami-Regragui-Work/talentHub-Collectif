@@ -1,22 +1,63 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="fr" class="h-full bg-gray-900 dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}SAMVC{% endblock %}</title>
+    <title>{% block title %}Talent HUB{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1f2937',
+                        secondary: '#3b82f6',
+                        success: '#10b981',
+                        danger: '#ef4444',
+                        warning: '#f59e0b'
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-[#030712] min-h-screen antialiased">
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
-        {% if app.flasher is defined and app.flasher.messages is defined %}
-            {% for message in app.flasher.messages %}
-                <div class="mb-6 p-4 border-2 border-gray-700 border-dashed rounded-lg bg-gray-900/50 text-gray-300">
-                    {{ message.content }}
+<body class="h-full bg-gray-900 text-white">
+    <!-- Navigation -->
+    <nav class="bg-primary shadow-lg border-b border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-2xl font-bold text-white">Talent HUB</h1>
+                    {% if user is defined %}
+                    <span class="px-3 py-1 bg-secondary text-white text-xs font-semibold rounded-full uppercase">
+                        {{ user.role.name.value }}
+                    </span>
+                    {% endif %}
                 </div>
-            {% endfor %}
-        {% endif %}
+                
+                <div class="hidden md:flex space-x-4">
+                    {% block navigation %}{% endblock %}
+                    
+                    {% if user is defined %}
+                        <a href="/logout" class="px-3 py-2 bg-danger hover:bg-red-600 rounded-md text-white font-semibold">
+                            Déconnexion
+                        </a>
+                    {% else %}
+                        <a href="/login" class="px-3 py-2 rounded-md text-gray-300 hover:bg-gray-700">Connexion</a>
+                        <a href="/register" class="px-3 py-2 bg-secondary hover:bg-blue-600 rounded-md text-white font-semibold">Inscription</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
 
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {% block content %}{% endblock %}
-    </div>
+    </main>
+
+    <footer class="mt-8 text-center text-gray-500 py-4 border-t border-gray-700">
+        <p>&copy; {{ "now"|date("Y") }} Talent HUB - MVC Application</p>
+    </footer>
 </body>
 </html>

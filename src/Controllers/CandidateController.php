@@ -3,21 +3,12 @@
 namespace App\Controllers;
 
 use App\Interfaces\DashboardInterface;
-use App\Services\AuthService;
-use App\View;
 
-class CandidateController implements DashboardInterface
+class CandidateController extends BaseController implements DashboardInterface
 {
-    private AuthService $authService;
-
-    public function __construct()
-    {
-        $this->authService = new AuthService();
-    }
-
     public function dashboard(): void
     {
-        $user = $this->authService->getCurrentUser();
-        View::render('candidate/dashboard.twig', ['user' => $user]);
+        $this->requireRole('candidate');
+        $this->render('candidate/dashboard.twig');
     }
 }

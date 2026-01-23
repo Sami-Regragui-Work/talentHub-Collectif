@@ -2,122 +2,94 @@
 
 namespace App\Controllers;
 
-use App\Services\AuthService;
-use App\View;
-
-class AuthController
+class AuthController extends BaseController
 {
-    private AuthService $auth_service;
-
-    public function __construct()
-    {
-        $this->auth_service = new AuthService();
-    }
-
-    private function redirectToDashboard(): void
-    {
-        $role = $this->auth_service->getCurrentRole();
-        header("Location: /{$role}/dashboard");
-        exit;
-    }
-
-    public function showRegister(): void
-    {
-        if ($this->auth_service->isLoggedIn()) {
-            $this->redirectToDashboard();
-            return;
-        }
-
-        $errors = $_SESSION['errors'] ?? [];
-        unset($_SESSION['errors']);
-
-        View::render('auth/register.twig', ['errors' => $errors]);
-    }
-
-    public function register(): void
-    {
-        $errors = [];
-
-        if (empty($_POST['fullname'])) {
-            $errors[] = "Full name is required";
-        }
-        if (empty($_POST['email']) || !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
-            $errors[] = "Valid email is required";
-        }
-        if (empty($_POST['password']) || strlen($_POST['password']) < 6) {
-            $errors[] = "Password must be at least 6 characters";
-        }
-        if (empty($_POST['role']) || !in_array($_POST['role'], ['candidate', 'recruiter'])) {
-            $errors[] = "Valid role is required";
-        }
-
-        if (!empty($errors)) {
-            $_SESSION['errors'] = $errors;
-            header('Location: /register');
-            exit;
-        }
-
-        $success = $this->auth_service->register(
-            $_POST['fullname'],
-            $_POST['email'],
-            $_POST['password'],
-            $_POST['role']
-        );
-
-        if (!$success) {
-            $_SESSION['errors'] = ["Email already exists"];
-            header('Location: /register');
-            exit;
-        }
-
-        $_SESSION['success'] = "Registration successful! Please login.";
-        header('Location: /login');
-        exit;
-    }
-
     public function showLogin(): void
     {
-        if ($this->auth_service->isLoggedIn()) {
+        if ($this->auth->isLoggedIn()) {
             $this->redirectToDashboard();
-            return;
         }
-
-        $errors = $_SESSION['errors'] ?? [];
-        $success = $_SESSION['success'] ?? null;
-        unset($_SESSION['errors'], $_SESSION['success']);
-
-        View::render('auth/login.twig', [
-            'errors' => $errors,
-            'success' => $success
+        
+        $this->render('auth/login.twig', [
+            'error' => $this->getFlash('error'),
+            'success' => $this->getFlash('success')
         ]);
     }
 
     public function login(): void
     {
-        $errors = [];
-
-        if (empty($_POST['email']) || empty($_POST['password'])) {
-            $errors[] = "Email and password are required";
-            $_SESSION['errors'] = $errors;
-            header('Location: /login');
-            exit;
+        if ($this->auth->isLoggedIn()) {
+            $this->redirectToDashboard();
         }
+        
+        $email = $_POST['email'] ?? '';
+        $password = $_POST['password'] ?? '';
+        
+        if (empty($email) || empty($password)) {
+            $this->setFlash('error', "Email et mot de passe requis");
+            $this->redirect('/login');
+        }
+        
+        if ($this->auth->login($email, $password)) {
+            $this->redirectToDashboard();
+        } else {
+            $this->setFlash('error', "Email ou mot de passe incorrect");
+            $this->redirect('/login');
+        }
+    }
 
-        $success = $this->auth_service->login($_POST['email'], $_POST['password']);
+    public function showRegister(): void
+    {
+        if ($this->auth->isLoggedIn()) {
+            $this->redirectToDashboard();
+        }
+        
+        $this->render('auth/register.twig', [
+            'error' => $this->getFlash('error')
+        ]);
+    }
 
+    public function register(): void
+    {
+        if ($this->auth->isLoggedIn()) {
+            $this->redirectToDashboard();
+        }
+        
+        $fullname = $_POST['fullname'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $password = $_POST['password'] ?? '';
+        $role = $_POST['role'] ?? 'candidate';
+        $companyName = $_POST['company_name'] ?? null;
+        
+        if (empty($fullname) || empty($email) || empty($password)) {
+            $this->setFlash('error', "Tous les champs sont requis");
+            $this->redirect('/register');
+        }
+        
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->setFlash('error', "Email invalide");
+            $this->redirect('/register');
+        }
+        
+        if (strlen($password) < 6) {
+            $this->setFlash('error', "Le mot de passe doit faire au moins 6 caractères");
+            $this->redirect('/register');
+        }
+        
+        $success = $this->auth->register($fullname, $email, $password, $role, $companyName);
+        
         if (!$success) {
-            $_SESSION['errors'] = ["Invalid email or password"];
-            header('Location: /login');
-            exit;
+            $this->setFlash('error', "Cet email est déjà utilisé");
+            $this->redirect('/register');
         }
-
-        $this->redirectToDashboard();
+        
+        $this->setFlash('success', "Inscription réussie ! Connectez-vous.");
+        $this->redirect('/login');
     }
 
     public function logout(): void
     {
-        $this->auth_service->logout();
-        header('Location: /login');
-        exit;
+        $this->auth->logout();
+        $this->redirect('/login');
     }
 }

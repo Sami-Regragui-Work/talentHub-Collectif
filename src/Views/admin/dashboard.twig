@@ -1,79 +1,102 @@
 {% extends "layout.twig" %}
 
-{% block title %}Admin Dashboard - SAMVC{% endblock %}
+{% block title %}Tableau de bord - Admin{% endblock %}
+
+{% block navigation %}
+    <a href="/admin/dashboard" class="px-3 py-2 rounded-md text-white bg-gray-700">Tableau de bord</a>
+    <a href="/admin/categories" class="px-3 py-2 rounded-md text-gray-300 hover:bg-gray-700">Catégories</a>
+    <a href="/admin/tags" class="px-3 py-2 rounded-md text-gray-300 hover:bg-gray-700">Tags</a>
+    <a href="/admin/offers" class="px-3 py-2 rounded-md text-gray-300 hover:bg-gray-700">Toutes les offres</a>
+    <a href="/admin/recruiters" class="px-3 py-2 rounded-md text-gray-300 hover:bg-gray-700">Recruteurs</a>
+    <a href="/admin/candidates" class="px-3 py-2 rounded-md text-gray-300 hover:bg-gray-700">Candidats</a>
+{% endblock %}
 
 {% block content %}
-    <div class="max-w-7xl mx-auto p-8 space-y-8">
-        <!-- Header -->
-        <div class="bg-gray-800/90 backdrop-blur-sm rounded-xl p-8 border-2 border-gray-700/50 text-center">
-            <h1 class="text-4xl font-bold text-white mb-4 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-                Admin Dashboard
-            </h1>
-            
-            <div class="bg-gray-900/50 border border-gray-700/50 rounded-lg p-6 inline-block">
-                <h2 class="text-xl font-semibold text-gray-200 mb-2">
-                    Welcome {{ user.fullName }}, the {{ user.role.stringName }}!
-                </h2>
-                <p class="text-gray-400 text-sm">Manage users, roles, and platform statistics</p>
-            </div>
-        </div>
+<div class="px-4 py-6 sm:px-0">
+    <h2 class="text-3xl font-bold text-white">Bienvenue, {{ user.fullName }}</h2>
+    <p class="mt-2 text-gray-400">Vue d'ensemble de la plateforme</p>
+</div>
 
-        <!-- Stats Grid (matching your UCC dashboard style) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="bg-gray-900/50 border border-gray-700 rounded-lg p-6 hover:bg-gray-800/50 transition-all duration-200 group">
-                <div class="text-3xl font-bold text-blue-400 mb-2 group-hover:text-blue-300">{{users}}</div>
-                <div class="text-gray-300 text-sm font-medium">Total Users</div>
-                <div class="text-gray-500 text-xs mt-1">All registered accounts</div>
+<!-- Statistics Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-gray-800 overflow-hidden shadow-lg rounded-lg border border-gray-700">
+        <div class="p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center">
+                        <span class="text-2xl">📁</span>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-3xl font-semibold text-white">{{ stats.categories|default('0') }}</p>
+                    <p class="text-gray-400 text-sm">Catégories</p>
+                </div>
             </div>
-            
-            <div class="bg-gray-900/50 border border-gray-700 rounded-lg p-6 hover:bg-gray-800/50 transition-all duration-200 group">
-                <div class="text-3xl font-bold text-green-400 mb-2 group-hover:text-green-300">{{candidates}}</div>
-                <div class="text-gray-300 text-sm font-medium">Candidates</div>
-                <div class="text-gray-500 text-xs mt-1">Job seekers</div>
-            </div>
-            
-            <div class="bg-gray-900/50 border border-gray-700 rounded-lg p-6 hover:bg-gray-800/50 transition-all duration-200 group">
-                <div class="text-3xl font-bold text-orange-400 mb-2 group-hover:text-orange-300">{{recruiters}}</div>
-                <div class="text-gray-300 text-sm font-medium">Recruiters</div>
-                <div class="text-gray-500 text-xs mt-1">Hiring managers</div>
-            </div>
-            
-            <div class="bg-gray-900/50 border border-gray-700 rounded-lg p-6 hover:bg-gray-800/50 transition-all duration-200 group">
-                <div class="text-3xl font-bold text-purple-400 mb-2 group-hover:text-purple-300">0</div>
-                <div class="text-gray-300 text-sm font-medium">Pending Actions</div>
-                <div class="text-gray-500 text-xs mt-1">Reviews & approvals</div>
-            </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <a href="#" class="bg-blue-700/90 hover:bg-blue-800 text-white font-medium py-4 px-6 rounded-lg border border-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl text-center group">
-                <div class="text-2xl font-bold text-blue-200 group-hover:text-blue-100 mb-1">👥</div>
-                <div>Manage Users</div>
-            </a>
-            
-            <a href="#" class="bg-green-700/90 hover:bg-green-800 text-white font-medium py-4 px-6 rounded-lg border border-green-600 transition-all duration-200 shadow-lg hover:shadow-xl text-center group">
-                <div class="text-2xl font-bold text-green-200 group-hover:text-green-100 mb-1">⚙️</div>
-                <div>System Settings</div>
-            </a>
-            
-            <a href="#" class="bg-purple-700/90 hover:bg-purple-800 text-white font-medium py-4 px-6 rounded-lg border border-purple-600 transition-all duration-200 shadow-lg hover:shadow-xl text-center group">
-                <div class="text-2xl font-bold text-purple-200 group-hover:text-purple-100 mb-1">📊</div>
-                <div>Reports</div>
-            </a>
-        </div>
-
-        <!-- Logout -->
-        <div class="text-center pt-8 border-t-2 border-gray-700">
-            <form method="GET" action="/logout" class="inline">
-                <button type="submit" 
-                        class="inline-flex items-center gap-2 bg-red-700 hover:bg-red-800 text-white font-semibold py-3 px-8 rounded-lg border border-red-600 transition-all duration-200 shadow-lg hover:shadow-xl focus:ring-4 focus:ring-red-500/50 focus:outline-none">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                    </svg>
-                    Logout
-                </button>
-            </form>
         </div>
     </div>
+
+    <div class="bg-gray-800 overflow-hidden shadow-lg rounded-lg border border-gray-700">
+        <div class="p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center">
+                        <span class="text-2xl">🏷️</span>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-3xl font-semibold text-white">{{ stats.tags|default('0') }}</p>
+                    <p class="text-gray-400 text-sm">Tags</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-gray-800 overflow-hidden shadow-lg rounded-lg border border-gray-700">
+        <div class="p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-warning/10 rounded-lg flex items-center justify-center">
+                        <span class="text-2xl">👔</span>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-3xl font-semibold text-white">{{ stats.recruiters|default('0') }}</p>
+                    <p class="text-gray-400 text-sm">Recruteurs</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-gray-800 overflow-hidden shadow-lg rounded-lg border border-gray-700">
+        <div class="p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center">
+                        <span class="text-2xl">💼</span>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <p class="text-3xl font-semibold text-white">{{ stats.offers|default('0') }}</p>
+                    <p class="text-gray-400 text-sm">Offres actives</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-700">
+    <h3 class="text-lg font-semibold text-white mb-4">Actions rapides</h3>
+    <div class="flex flex-wrap gap-3">
+        <a href="/admin/categories/create" class="inline-flex items-center px-4 py-2 bg-secondary hover:bg-blue-600 text-white rounded-md">
+            + Nouvelle catégorie
+        </a>
+        <a href="/admin/tags/create" class="inline-flex items-center px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md">
+            + Nouveau tag
+        </a>
+        <a href="/admin/recruiters/create" class="inline-flex items-center px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md">
+            + Ajouter recruteur
+        </a>
+    </div>
+</div>
 {% endblock %}

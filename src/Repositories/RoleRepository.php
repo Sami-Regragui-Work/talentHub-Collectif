@@ -15,7 +15,7 @@ class RoleRepository
     public function __construct()
     {
         $this->pdo = Database::getPdo();
-    }
+    } 
 
     private function toObject(array $data): Role
     {
