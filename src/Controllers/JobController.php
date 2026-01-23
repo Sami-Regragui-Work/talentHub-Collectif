@@ -7,6 +7,7 @@ use App\Repositories\CategoryRepository;
 use App\Repositories\TagRepository;
 use App\Services\AuthService;
 use App\View;
+use PDO;
 
 class JobController
 {
@@ -27,7 +28,7 @@ class JobController
     public function index(): void
     {
         $user = $this->authService->getCurrentUser();
-        $jobs = $this->jobRepository->findAllActive();
+        $jobs = $this->jobRepository->findActive();
         $categories = $this->categoryRepository->findAll();
         $tags = $this->tagRepository->findAll();
 
@@ -43,7 +44,7 @@ class JobController
     public function show(int $id): void
     {
         $user = $this->authService->getCurrentUser();
-        $job = $this->jobRepository->findByIdWithDetails($id);
+        $job = $this->jobRepository->findById($id);
 
         if (!$job || $job['deleted_at'] !== null) {
             $_SESSION['errors'] = ["Job not found"];
@@ -99,21 +100,14 @@ class JobController
         $errors = [];
         $user = $this->authService->getCurrentUser();
 
-        
         if (empty($_POST['title']) || strlen(trim($_POST['title'])) < 5) {
             $errors[] = "Job title must be at least 5 characters";
         }
         if (empty($_POST['description']) || strlen(trim($_POST['description'])) < 20) {
             $errors[] = "Job description must be at least 20 characters";
         }
-        if (empty($_POST['location'])) {
-            $errors[] = "Location is required";
-        }
-        if (empty($_POST['category_id']) || !is_numeric($_POST['category_id'])) {
-            $errors[] = "Valid category is required";
-        }
-        if (empty($_POST['contract_type'])) {
-            $errors[] = "Contract type is required";
+        if (empty($_POST['category_name'])) {
+            $errors[] = "Category is required";
         }
 
         if (!empty($errors)) {
@@ -122,24 +116,27 @@ class JobController
             exit;
         }
 
-        
         $jobData = [
             'title' => htmlspecialchars(trim($_POST['title']), ENT_QUOTES, 'UTF-8'),
             'description' => htmlspecialchars(trim($_POST['description']), ENT_QUOTES, 'UTF-8'),
-            'location' => htmlspecialchars(trim($_POST['location']), ENT_QUOTES, 'UTF-8'),
-            'category_id' => (int)$_POST['category_id'],
-            'contract_type' => htmlspecialchars(trim($_POST['contract_type']), ENT_QUOTES, 'UTF-8'),
-            'salary_min' => !empty($_POST['salary_min']) ? (float)$_POST['salary_min'] : null,
-            'salary_max' => !empty($_POST['salary_max']) ? (float)$_POST['salary_max'] : null,
-            'recruiter_id' => $user['id']
+            'salary' => !empty($_POST['salary']) ? (float)$_POST['salary'] : null,
+            'category_name' => htmlspecialchars(trim($_POST['category_name']), ENT_QUOTES, 'UTF-8'),
+            'recruiter_id' => $user->getId()
         ];
 
-        
-        $selectedTags = $_POST['tags'] ?? [];
+        $job = $this->jobRepository->create($jobData, [
+            PDO::PARAM_STR,
+            PDO::PARAM_STR,
+            isset($_POST['salary']) ? PDO::PARAM_STR : PDO::PARAM_NULL,
+            PDO::PARAM_STR,
+            PDO::PARAM_INT
+        ]);
 
-        $jobId = $this->jobRepository->createWithTags($jobData, $selectedTags);
-
-        if ($jobId) {
+        if ($job) {
+            $selectedTags = $_POST['tags'] ?? [];
+            if (!empty($selectedTags)) {
+                $this->jobRepository->attachTags($job->getId(), $selectedTags);
+            }
             $_SESSION['success'] = "Job created successfully!";
             header('Location: /recruiter/jobs');
         } else {
@@ -149,14 +146,13 @@ class JobController
         exit;
     }
 
-    
+
     public function edit(int $id): void
     {
         $user = $this->authService->getCurrentUser();
-        $job = $this->jobRepository->findByIdWithDetails($id);
+        $job = $this->jobRepository->findById($id);
 
-        
-        if (!$job || $job['recruiter_id'] !== $user['id']) {
+        if (!$job || $job->getRecruiter()->getId() !== $user->getId()) {
             $_SESSION['errors'] = ["Job not found or unauthorized"];
             header('Location: /recruiter/jobs');
             exit;
@@ -176,32 +172,24 @@ class JobController
         ]);
     }
 
-    
+
     public function update(int $id): void
     {
         $errors = [];
         $user = $this->authService->getCurrentUser();
 
-        
         $job = $this->jobRepository->findById($id);
-        if (!$job || $job['recruiter_id'] !== $user['id']) {
+        if (!$job || $job->getRecruiter()->getId() !== $user->getId()) {
             $_SESSION['errors'] = ["Job not found or unauthorized"];
             header('Location: /recruiter/jobs');
             exit;
         }
 
-        
         if (empty($_POST['title']) || strlen(trim($_POST['title'])) < 5) {
             $errors[] = "Job title must be at least 5 characters";
         }
         if (empty($_POST['description']) || strlen(trim($_POST['description'])) < 20) {
             $errors[] = "Job description must be at least 20 characters";
-        }
-        if (empty($_POST['location'])) {
-            $errors[] = "Location is required";
-        }
-        if (empty($_POST['category_id']) || !is_numeric($_POST['category_id'])) {
-            $errors[] = "Valid category is required";
         }
 
         if (!empty($errors)) {
@@ -210,22 +198,23 @@ class JobController
             exit;
         }
 
-        
         $jobData = [
             'title' => htmlspecialchars(trim($_POST['title']), ENT_QUOTES, 'UTF-8'),
             'description' => htmlspecialchars(trim($_POST['description']), ENT_QUOTES, 'UTF-8'),
-            'location' => htmlspecialchars(trim($_POST['location']), ENT_QUOTES, 'UTF-8'),
-            'category_id' => (int)$_POST['category_id'],
-            'contract_type' => htmlspecialchars(trim($_POST['contract_type']), ENT_QUOTES, 'UTF-8'),
-            'salary_min' => !empty($_POST['salary_min']) ? (float)$_POST['salary_min'] : null,
-            'salary_max' => !empty($_POST['salary_max']) ? (float)$_POST['salary_max'] : null,
+            'salary' => !empty($_POST['salary']) ? (float)$_POST['salary'] : null,
+            'category_name' => htmlspecialchars(trim($_POST['category_name']), ENT_QUOTES, 'UTF-8')
         ];
 
-        $selectedTags = $_POST['tags'] ?? [];
-
-        $success = $this->jobRepository->updateWithTags($id, $jobData, $selectedTags);
+        $success = $this->jobRepository->update($id, $jobData, [
+            PDO::PARAM_STR,
+            PDO::PARAM_STR,
+            isset($_POST['salary']) ? PDO::PARAM_STR : PDO::PARAM_NULL,
+            PDO::PARAM_STR
+        ]);
 
         if ($success) {
+            $selectedTags = $_POST['tags'] ?? [];
+            $this->jobRepository->syncTags($id, $selectedTags);
             $_SESSION['success'] = "Job updated successfully!";
         } else {
             $_SESSION['errors'] = ["Failed to update job"];
@@ -235,19 +224,19 @@ class JobController
         exit;
     }
 
-    
+
     public function delete(int $id): void
     {
         $user = $this->authService->getCurrentUser();
         $job = $this->jobRepository->findById($id);
 
-        if (!$job || $job['recruiter_id'] !== $user['id']) {
+        if (!$job || $job->getRecruiter()->getId() !== $user->getId()) {
             $_SESSION['errors'] = ["Job not found or unauthorized"];
             header('Location: /recruiter/jobs');
             exit;
         }
 
-        $success = $this->jobRepository->softDelete($id);
+        $success = $this->jobRepository->archive($id);
 
         if ($success) {
             $_SESSION['success'] = "Job archived successfully!";
@@ -290,22 +279,22 @@ class JobController
     }
 
     
-    public function recommended(): void
-    {
-        $user = $this->authService->getCurrentUser();
+    // public function recommended(): void
+    // {
+    //     $user = $this->authService->getCurrentUser();
         
         
-        $userSkills = $this->jobRepository->getUserSkills($user['id']);
-        $salaryExpectation = $user['salary_expectation'] ?? null;
+    //     $userSkills = $this->jobRepository->getUserSkills($user['id']);
+    //     $salaryExpectation = $user['salary_expectation'] ?? null;
 
-        $recommendedJobs = $this->jobRepository->findRecommendedJobs(
-            $userSkills,
-            $salaryExpectation
-        );
+    //     $recommendedJobs = $this->jobRepository->findRecommendedJobs(
+    //         $userSkills,
+    //         $salaryExpectation
+    //     );
 
-        View::render('candidate/recommended-jobs.twig', [
-            'user' => $user,
-            'jobs' => $recommendedJobs
-        ]);
-    }
+    //     View::render('candidate/recommended-jobs.twig', [
+    //         'user' => $user,
+    //         'jobs' => $recommendedJobs
+    //     ]);
+    // }
 }

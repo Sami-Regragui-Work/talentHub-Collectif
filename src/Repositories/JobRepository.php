@@ -148,21 +148,11 @@ class JobRepository extends BaseRepository
 
     public function syncTags(int $jobId, array $tagNames): bool
     {
-        try {
-            $this->pdo->beginTransaction();
-
-            $this->detachAllTags($jobId);
-            if (!empty($tagNames)) {
-                $this->attachTags($jobId, $tagNames);
-            }
-
-            $this->pdo->commit();
-            return true;
-        } catch (PDOException $e) {
-            $this->pdo->rollBack();
-            error_log($this::class . ' syncTags error: ' . $e->getMessage());
-            return false;
+        $this->detachAllTags($jobId);
+        if (!empty($tagNames)) {
+            return $this->attachTags($jobId, $tagNames);
         }
+        return true;
     }
 
     public function search(

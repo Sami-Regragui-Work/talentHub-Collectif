@@ -38,8 +38,8 @@ class AuthController
     {
         $errors = [];
 
-        if (empty($_POST['fullname'])) {
-            $errors[] = "Full name is required";
+        if (empty($_POST['name'])) {
+            $errors[] = "name is required";
         }
         if (empty($_POST['email']) || !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
             $errors[] = "Valid email is required";
@@ -62,7 +62,7 @@ class AuthController
         }
 
         $data = [
-            'name' => $_POST['fullname'],
+            'name' => $_POST['name'],
             'email' => $_POST['email'],
             'password' => $_POST['password'],
             'role_name' => $_POST['role']
