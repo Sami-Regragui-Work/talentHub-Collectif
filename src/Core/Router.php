@@ -10,10 +10,6 @@ class Router
 {
     private array $routes = [];
 
-    public function __construct()
-    {
-        $this->auth_service = new AuthService();
-    }
 
     public function addRoute(string $method, string $path, string $controller, string $action, array $middlewares = []): void
     {
@@ -22,7 +18,7 @@ class Router
             "path" => $path,
             "controller" => $controller,
             "action" => $action,
-            "middleware" => $middlewares
+            "middlewares" => $middlewares
         ];
     }
     
