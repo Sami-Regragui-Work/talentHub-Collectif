@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Job;
+use Exception;
 use PDO;
 use PDOException;
 
@@ -27,22 +28,18 @@ class JobRepository extends BaseRepository
 
     protected function toObject(array $data): Job
     {
-        // Get the category
         $category = $this->category_repo->findByName($data['category_name']);
         if (!$category) {
-            throw new \Exception('Category not found for job');
+            throw new Exception('Category not found for job');
         }
 
-        // Get the recruiter
         $recruiter = $this->recruiter_repo->findById($data['recruiter_id']);
         if (!$recruiter) {
-            throw new \Exception('Recruiter not found for job');
+            throw new Exception('Recruiter not found for job');
         }
 
-        // Get tags for this job
         $tags = $this->findTagsForJob($data['id']);
 
-        // Create Job object with all required dependencies
         return new Job($data, $category, $recruiter, $tags);
     }
 
