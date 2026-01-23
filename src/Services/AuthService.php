@@ -5,40 +5,54 @@ namespace App\Services;
 use App\enumTypes\RoleName;
 use App\Models\User;
 use App\Repositories\UserRepository;
-use PDO;
+use App\Repositories\RecruiterRepository;
 
 class AuthService
 {
-    private UserRepository $user_repo;
+    private UserRepository $userRepo;
+    private RecruiterRepository $recruiterRepo;
 
     public function __construct()
     {
-        $this->user_repo = new UserRepository();
+        $this->userRepo = new UserRepository();
+        $this->recruiterRepo = new RecruiterRepository();
 
-        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
     }
 
-    public function register(array $data): bool
+    public function register(string $name, string $email, string $password, string $role, ?string $companyName = null): bool
     {
-        // string $fullname, string $email, string $password, string $role
-        if ($this->user_repo->emailExists($data["email"])) return false;
+        if ($this->userRepo->emailExists($email)) {
+            return false;
+        }
 
-        $data["role_name"] = RoleName::from($data["role_name"]);
-        $this->user_repo->create($data,[PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_STR]);
+        $roleName = RoleName::from($role);
+        $user = $this->userRepo->create($name, $email, $password, $roleName);
+
+        if ($roleName === RoleName::RECRUITER && $companyName) {
+            $this->recruiterRepo->create($user->getId(), $companyName);
+        }
 
         return true;
     }
 
     public function login(string $email, string $password): bool
     {
-        $user = $this->user_repo->findByEmail($email);
+        $user = $this->userRepo->findByEmail($email);
 
-        if (!$user) return false;
-        if (!password_verify($password, $user->getPassword())) return false;
+        if (!$user) {
+            return false;
+        }
+
+        if (!password_verify($password, $user->getPasswordHash())) {
+            return false;
+        }
 
         $_SESSION['user_id'] = $user->getId();
         $_SESSION['user_role'] = $user->getRole()->getName()->value;
-        $_SESSION['user_name'] = $user->getFullName();
+        $_SESSION['user_name'] = $user->getName();
 
         return true;
     }
@@ -60,11 +74,31 @@ class AuthService
             return null;
         }
 
-        return $this->user_repo->findById($_SESSION['user_id']);
+        return $this->userRepo->findById($_SESSION['user_id']);
     }
 
     public function getCurrentRole(): ?string
     {
         return $_SESSION['user_role'] ?? null;
+    }
+
+    public function requireAuth(): void
+    {
+        if (!$this->isLoggedIn()) {
+            header('Location: /login');
+            exit;
+        }
+    }
+
+    public function requireRole(RoleName $requiredRole): void
+    {
+        $this->requireAuth();
+
+        $user = $this->getCurrentUser();
+        if (!$user || $user->getRole()->getName() !== $requiredRole) {
+            http_response_code(403);
+            header('Location: /403');
+            exit;
+        }
     }
 }
