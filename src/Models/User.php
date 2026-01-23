@@ -7,7 +7,7 @@ use DateTimeImmutable;
 class User
 {
     private int $id;
-    private string $full_name;
+    private string $name;
     private string $email;
     private string $password;
     private readonly DateTimeImmutable $created_at;
@@ -18,7 +18,7 @@ class User
     public function __construct(array $data, Role $role)
     {
         $this->id = (int) $data["id"];
-        $this->full_name = (string) $data["name"];
+        $this->name = (string) $data["name"];
         $this->email = (string) $data["email"];
         $this->setPassword((string) $data["password"]);
         $this->created_at = new DateTimeImmutable($data["created_at"]);
@@ -31,9 +31,9 @@ class User
     {
         return $this->id;
     }
-    public function getFullName(): string
+    public function getName(): string
     {
-        return $this->full_name;
+        return $this->name;
     }
     public function getEmail(): string
     {
@@ -60,9 +60,9 @@ class User
     {
         $this->id = $id;
     }
-    public function setFullName(string $full_name): void
+    public function setName(string $name): void
     {
-        $this->full_name = $full_name;
+        $this->name = $name;
     }
     public function setEmail(string $email): void
     {
