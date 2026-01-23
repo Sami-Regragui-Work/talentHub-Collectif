@@ -24,7 +24,6 @@ class RecruiterRepository extends BaseRepository
 
     protected function toObject(array $data): Recruiter
     {
-        // Fetch user data joined with recruiter data
         try {
             $sql = <<<SQL
             SELECT u.*, r.company_name
@@ -42,7 +41,6 @@ class RecruiterRepository extends BaseRepository
                 throw new \Exception('User data not found for recruiter');
             }
 
-            // Get the role
             $roleName = RoleName::from($fullData['role_name']);
             $role = $this->role_repo->findByName($roleName);
 
@@ -50,7 +48,6 @@ class RecruiterRepository extends BaseRepository
                 throw new \Exception('Role not found for recruiter');
             }
 
-            // Prepare complete data array
             $recruiterData = [
                 'id' => $fullData['id'],
                 'fullname' => $fullData['name'],
